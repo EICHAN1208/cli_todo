@@ -1,16 +1,12 @@
 require 'csv'
 
 module Storage
-  def write
+  def save
     initialize_csv unless File.exist? './tmp/tasks.csv'
     CSV.open('./tmp/tasks.csv', 'a', force_quotes: true) do |csv|
       csv << attributes
     end
     self
-  end
-
-  def find(id)
-    load_tasks.find { |task| task.id == id }
   end
 
   def update
@@ -25,12 +21,12 @@ module Storage
     end
   end
 
-  def load_tasks
+  def all
     tasks = []
     CSV.foreach('./tmp/tasks.csv', headers: :first_row) do |row|
       task = row.to_h
-      load_task = Task.new(task['title'], id: task['id'], due_date: task['due_date'], completed_at: task['completed_at'])
-      tasks << load_task
+      task = Task.new(task['title'], id: task['id'], due_date: task['due_date'], completed_at: task['completed_at'])
+      tasks << task
     end
     tasks
   end
@@ -39,7 +35,7 @@ module Storage
 
   def initialize_csv
     CSV.open('./tmp/tasks.csv', 'w', force_quotes: true) do |csv|
-      csv << %w[id due_date completed_at title]
+      csv << HEADERS
     end
   end
 end

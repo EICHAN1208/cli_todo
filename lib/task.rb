@@ -5,19 +5,21 @@ require './lib/storage'
 class Task
   include Storage
 
+  HEADERS = %w[id due_date completed_at title].freeze
+
   attr_reader :id, :due_date, :completed_at, :title
 
   class << self
     def add(title, due_date: nil)
       task = new(title, due_date: due_date)
-      task.write
+      task.save
     end
   end
 
   def initialize(title, id: SecureRandom.hex(3), due_date: nil, completed_at: nil)
     @title = title
     @id = id
-    @due_date = blank?(due_date) ? nil : Date.parse(due_date)
+    @due_date = due_date.to_s.empty? ? nil : Date.parse(due_date)
     @completed_at = completed_at
   end
 
@@ -36,11 +38,5 @@ class Task
 
   def attributes
     [id, due_date, completed_at, title]
-  end
-
-  private
-
-  def blank?(due_date)
-    due_date.nil? || due_date.empty?
   end
 end

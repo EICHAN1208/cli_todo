@@ -7,19 +7,19 @@ class TaskFinder
 
   class << self
     def find_by_id(id)
-      find(id)
+      all.find { |task| task.id == id }
     end
 
     def find_uncompleted
-      load_tasks.select(&:uncompleted?)
+      all.select(&:uncompleted?)
     end
 
     def find_completed
-      load_tasks.reject(&:uncompleted?)
+      all.reject(&:uncompleted?)
     end
 
     def find_due_date_today
-      load_tasks.select(&:due_date_today?)
+      all.select(&:due_date_today?)
     end
   end
 end

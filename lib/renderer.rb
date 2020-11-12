@@ -26,20 +26,31 @@ class Renderer
     end
 
     def render(tasks)
-      tasks = tasks.instance_of?(Task) ? [tasks] : tasks
-      return puts 'no tasks' if tasks.empty?
+      @tasks = tasks.instance_of?(Task) ? [tasks] : tasks
 
-      text = format_attributes
-      tasks.each do |task|
-        text += "\n" + format('%-15s%-15s%-20s%-15s', task.id, task.due_date, task.completed_at, task.title)
-      end
-      puts text
+      erb = ERB.new(template.lines.map(&:strip).join("\n"), trim_mode: '-')
+      puts erb.result(binding)
     end
 
-    private
+    def template
+      <<~TEXT
+        <% if @tasks.empty? -%>
+          no tasks
+        <% else -%>
+          <%= format_headers %>
+          <% @tasks.each do |task| -%>
+            <%= format_attributes(task) %>
+          <% end -%>
+        <% end -%>
+      TEXT
+    end
 
-    def format_attributes
+    def format_headers
       format('%-15s%-15s%-20s%-15s', 'id', 'due_date', 'completed_at', 'title')
+    end
+
+    def format_attributes(task)
+      format('%-15s%-15s%-20s%-15s', task.id, task.due_date, task.completed_at, task.title)
     end
   end
 end

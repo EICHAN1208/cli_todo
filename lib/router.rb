@@ -4,17 +4,17 @@ require './lib/renderer'
 
 class Router
   class << self
-    def route(arg_0, arg_1, arg_2, arg_3)
-      case arg_0
+    def route(*args)
+      case args[0]
       when '--help'
         Renderer.render_help_option
       when 'add'
-        return unless option_correct?(arg_2)
+        return unless correct_option?(args[2])
 
-        task = Task.add(arg_1, due_date: arg_3)
+        task = Task.add(args[1], due_date: args[3])
         Renderer.render(task)
       when 'done'
-        task = TaskFinder.find_by_id(arg_1)
+        task = TaskFinder.find_by_id(args[1])
         task.done
         Renderer.render(task)
       when 'all'
@@ -31,8 +31,8 @@ class Router
 
     private
 
-    def option_correct?(arg_2)
-      (arg_2 == '-d') || (arg_2 == '--due') || arg_2.nil?
+    def correct_option?(arg2)
+      (arg2 == '-d') || (arg2 == '--due') || arg2.nil?
     end
   end
 end
