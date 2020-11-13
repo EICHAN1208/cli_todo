@@ -29,7 +29,7 @@ class Task
   end
 
   def uncompleted?
-    completed_at.empty?
+    completed_at.to_s.empty?
   end
 
   def due_date_today?

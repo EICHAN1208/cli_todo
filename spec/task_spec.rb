@@ -59,14 +59,9 @@ RSpec.describe 'Task' do
     subject { task.uncompleted? }
 
     context '完了日が入っている場合' do
-      let(:created_task) { Task.add('タスク') }
-      let(:task) { TaskFinder.find_by_id(created_task.id) }
+      let(:task) { Task.new('task') }
 
-      before do
-        task.done
-      end
-
-      it 'falseとなる' do # task.completed_atがオブジェクトになる
+      it 'falseとなる' do
         expect(subject).to eq true
       end
     end
@@ -74,32 +69,48 @@ RSpec.describe 'Task' do
     context '完了日が入っていない場合' do
       let(:task) { Task.add('タスク') }
 
-      it 'trueとなる' do  # task.completed_atがnilになる
-        expect(subject).to eq true
+      it 'trueとなる' do
+        is_expected.to eq true
       end
     end
   end
 
   describe '#due_date_today?' do
-    context '今日の日付が入っている場合' do
-      it 'trueとなる' do
+    subject { task.due_date_today? }
 
+    context '今日の日付が入っている場合' do
+      let(:task) { Task.new('task', due_date: Date.today.strftime('%m/%d')) }
+
+      it 'trueとなる' do
+        is_expected.to eq true
       end
     end
 
-    context '日付が入っていない, 今日の日付ではない場合' do
-      it 'falseとなる' do
+    context '日付が入っていない場合' do
+      let(:task) { Task.new('task', due_date: nil) }
 
+      it 'falseとなる' do
+        is_expected.to eq false
+      end
+    end
+
+    context '今日の日付ではない場合' do
+      let(:yesterday) { Date.today.prev_day(1).strftime }
+      let(:task) { Task.new('task', due_date: yesterday) }
+
+      it 'falseとなる' do
+        is_expected.to eq false
       end
     end
   end
 
   describe '#attributes' do
-    let(:created_task) { Task.new('タスク') }
-    # let(:task) { created_task.id = '1111' }
+    subject { task.attributes }
+
+    let(:task) { Task.new('task') }
 
     it 'それぞれのタスクの属性が表示される' do
-      expect(task.attributes).to eq ["d5111d", nil, nil, "タスク"]
+      is_expected.to include nil, nil, 'task'
     end
   end
 end
